@@ -2,7 +2,7 @@
 void manual_mode()
 {
 	int old_speed = positions.SERVO_MOVE_SPEED;
-	read_button_inc_switch(BUTTON_SPEED_SELECT_MAIN, 0, 3, positions.SERVO_MOVE_SPEED);
+	read_button_inc_switch_pcf2(PCF1, BUTTON_SPEED_SELECT_PCF1, 0, 3, positions.SERVO_MOVE_SPEED, BUTTON_DELAY);
 	if (old_speed != positions.SERVO_MOVE_SPEED)
 	{
 		Serial.print("Move speed: ");
@@ -10,7 +10,7 @@ void manual_mode()
 	}
 	//servo_pos_changed[0] = twoButtonControl_pcf(positions.SERVO_ROTATE_POS, 0, 1, positions.SERVO_MOVE_SPEED);
 	
-	servo_pos_changed[0] = twoButtonControl_pcf(positions.SERVO_ROTATE_POS, BUTTON_ROTATE_MINUS_PCF0, BUTTON_ROTATE_PLUS_PCF0, positions.SERVO_MOVE_SPEED, 0);
+	servo_pos_changed[0] = twoButtonControl_pcf(positions.SERVO_ROTATE_POS, BUTTON_ROTATE_MINUS_PCF0, BUTTON_ROTATE_PLUS_PCF0, positions.SERVO_MOVE_SPEED, PCF0);
 	if (positions.SERVO_ROTATE_POS < limits.SERVO_ROTATE_MIN)
 		positions.SERVO_ROTATE_POS = limits.SERVO_ROTATE_MIN;
 	else if (positions.SERVO_ROTATE_POS > limits.SERVO_ROTATE_MAX)
@@ -23,7 +23,7 @@ void manual_mode()
 	}
 		
 
-	servo_pos_changed[1] = twoButtonControl_pcf_main(positions.SERVO_VERTICAL_POS, BUTTON_VERTICAL_DOWN_PCF0, BUTTON_VERTICAL_UP_MAIN, positions.SERVO_MOVE_SPEED, 0);
+	servo_pos_changed[1] = twoButtonControl_pcf(positions.SERVO_VERTICAL_POS, BUTTON_VERTICAL_DOWN_PCF0, BUTTON_VERTICAL_UP_PCF0, positions.SERVO_MOVE_SPEED, PCF0);
 	if (positions.SERVO_VERTICAL_POS < limits.SERVO_VERTICAL_MIN)
 		positions.SERVO_VERTICAL_POS = limits.SERVO_VERTICAL_MIN;
 	else if (positions.SERVO_VERTICAL_POS > limits.SERVO_VERTICAL_MAX)
@@ -36,7 +36,7 @@ void manual_mode()
 	}
 
 
-	servo_pos_changed[2] = twoButtonControl_pcf(positions.SERVO_EXTEND_POS, BUTTON_EXTEND_PLUS_PCF0, BUTTON_EXTEND_MINUS_PCF0, positions.SERVO_MOVE_SPEED, 0);
+	servo_pos_changed[2] = twoButtonControl_pcf(positions.SERVO_EXTEND_POS, BUTTON_EXTEND_PLUS_PCF0, BUTTON_EXTEND_MINUS_PCF0, positions.SERVO_MOVE_SPEED, PCF0);
 	if (positions.SERVO_EXTEND_POS < limits.SERVO_EXTEND_MIN)
 		positions.SERVO_EXTEND_POS = limits.SERVO_EXTEND_MIN;
 	else if (positions.SERVO_EXTEND_POS > limits.SERVO_EXTEND_MAX)
@@ -50,7 +50,7 @@ void manual_mode()
 
 
 
-	servo_pos_changed[3] = twoButtonControl_pcf(positions.SERVO_GRIPPER_POS, BUTTON_GRIPPER_OPEN_PCF0, BUTTON_GRIPPER_CLOSE_PCF0, positions.SERVO_MOVE_SPEED, 0);
+	servo_pos_changed[3] = twoButtonControl_pcf(positions.SERVO_GRIPPER_POS, BUTTON_GRIPPER_OPEN_PCF0, BUTTON_GRIPPER_CLOSE_PCF0, positions.SERVO_MOVE_SPEED, PCF0);
 	if (positions.SERVO_GRIPPER_POS < limits.SERVO_GRIPPER_MIN)
 		positions.SERVO_GRIPPER_POS = limits.SERVO_GRIPPER_MIN;
 	if (positions.SERVO_GRIPPER_POS > limits.SERVO_GRIPPER_MAX)

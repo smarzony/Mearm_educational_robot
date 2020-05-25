@@ -34,8 +34,6 @@
 
 #endif // SERVOS_WORKING
 
-
-
 #define ROTORY_ENCODER_PUSHBUTTON P2
 #define ROTORY_ENCODER_CLK P0
 #define ROTORY_ENCODER_DT P1
@@ -47,11 +45,14 @@
 
 #define MAX_PROGRAM_STEPS 30
 
+#define PCF0 0
+#define PCF1 1
+
 #define BUTTON_ROTATE_PLUS_PCF0 0
 #define BUTTON_ROTATE_MINUS_PCF0 1
 
 #define BUTTON_VERTICAL_DOWN_PCF0 2
-#define BUTTON_VERTICAL_UP_MAIN 6
+#define BUTTON_VERTICAL_UP_PCF0 3
 
 #define BUTTON_EXTEND_MINUS_PCF0 4
 #define BUTTON_EXTEND_PLUS_PCF0 5
@@ -60,16 +61,16 @@
 #define BUTTON_GRIPPER_CLOSE_PCF0 7
 
 
-#define BUTTON_SPEED_SELECT_MAIN 5
 
-#define BUTTON_SAVE_POSITION_MAIN 4
-#define BUTTON_RUN_PROGRAM_MAIN 3
-#define BUTTON_ERASE_PROGRAM_MAIN 2
-#define BUTTON_STEP_MODE_MAIN A2
-#define BUTTON_STEP_BACK_MAIN A1
-#define BUTTON_EXIT_PROGRAM_MAIN A3
+#define BUTTON_SPEED_SELECT_PCF1 0
+#define BUTTON_SAVE_POSITION_PCF1 1
+#define BUTTON_RUN_PROGRAM_PCF1 2
+#define BUTTON_ERASE_PROGRAM_PCF1 3
+#define BUTTON_STEP_MODE_PCF1 4
+#define BUTTON_STEP_BACK_PCF1 5
+#define BUTTON_EXIT_PROGRAM_PCF1 6
 
-#define BUTTON_DELAY 400
+#define BUTTON_DELAY 100
 
 struct servo_limits
 {
@@ -106,7 +107,6 @@ struct rotoryEncoder {
 
 PCF8574 pcf8574[2] = { 0x20, 0x21 };
 
-
 #ifdef SERVOS_WORKING
 	Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 #endif
@@ -117,7 +117,7 @@ rotoryEncoder rotory_encoder;
 servo_limits limits;
 servo_positions positions;
 
-unsigned long now, last_save_time = 0, last_save_position = 0, last_erase = 0;
+unsigned long now, last_save_time = 0, last_save_position = 0, last_erase = 0, last_speed_change_time;
 uint16_t address_for_save = 0;
 bool servo_pos_changed[4];
 bool program_run = false;
@@ -161,13 +161,15 @@ void setup() {
 
 void loop() {
 	now = millis();
+
 	if (now - last_save_time > 1000)
 	{
 		last_save_time = now;
 		save_coords(positions, 0);
 	}
-	read_buttons();
 
+	read_buttons();
+	step_mode_switch_pcf(PCF1, BUTTON_STEP_MODE_PCF1);
 	if (read_memory)
 	{
 		memory_read();
@@ -193,9 +195,23 @@ void loop() {
 		erasing = false;
 	}
 
-
 	if (program_run == false)
 	{
 		manual_mode();
 	}
+	/*
+	if (pcf8574[PCF1].digitalRead(0) == LOW)
+	{
+		delay(300);
+		if (pcf8574[PCF1].digitalRead(0) == LOW)
+			positions.SERVO_MOVE_SPEED++;
+			if (positions.SERVO_MOVE_SPEED > 3)
+				positions.SERVO_MOVE_SPEED = 0;
+			Serial.print("Servo move speed: ");
+			Serial.println(positions.SERVO_MOVE_SPEED);		
+	}
+	
+	read_button_inc_switch_pcf2(PCF1, BUTTON_SPEED_SELECT_PCF1, 0, 3, positions.SERVO_MOVE_SPEED, 50);
+	*/
 }
+

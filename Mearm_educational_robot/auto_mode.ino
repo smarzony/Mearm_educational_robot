@@ -6,14 +6,20 @@ void auto_mode()
 	exit_program = false;
 	while (1)
 	{
-		read_button_neg_switch(BUTTON_EXIT_PROGRAM_MAIN, exit_program);
+		read_button_neg_switch_pcf2(PCF1, BUTTON_EXIT_PROGRAM_PCF1, exit_program, BUTTON_DELAY);
 		if (exit_program)
 		{
 			break;
 		}
-		step_mode_switch();
-		get_coords(program_step, program_step_no + 1);
 
+		if (pcf8574[PCF1].digitalRead(BUTTON_STEP_MODE_PCF1) == false) // this is faster
+		{
+			step_mode = true;
+			Serial.println("Step mode ON");
+			delay(500);
+		}
+
+		get_coords(program_step, program_step_no + 1);
 		if ((program_step.SERVO_ROTATE_POS == 1 && program_step.SERVO_VERTICAL_POS == 2 && program_step.SERVO_EXTEND_POS == 3 && program_step.SERVO_GRIPPER_POS == 4 && program_step.SERVO_MOVE_SPEED == 5) ||
 			(program_step_no > MAX_PROGRAM_STEPS)
 			)
@@ -66,13 +72,12 @@ void auto_mode()
 				save_coords(positions, 0);
 				while (make_step == false && step_back == false && step_mode == true && exit_program == false)
 				{
-					read_button_neg_switch(BUTTON_RUN_PROGRAM_MAIN, make_step);
-					read_button_neg_switch(BUTTON_STEP_BACK_MAIN, step_back);
-					read_button_neg_switch(BUTTON_SAVE_POSITION_MAIN, saving);
-					read_button_neg_switch(BUTTON_ERASE_PROGRAM_MAIN, erasing);
-					read_button_neg_switch(BUTTON_EXIT_PROGRAM_MAIN, exit_program);
-
-					step_mode_switch();
+					read_button_neg_switch_pcf2(PCF1, BUTTON_RUN_PROGRAM_PCF1, make_step, BUTTON_DELAY);
+					read_button_neg_switch_pcf2(PCF1, BUTTON_STEP_BACK_PCF1, step_back, BUTTON_DELAY);
+					read_button_neg_switch_pcf2(PCF1, BUTTON_SAVE_POSITION_PCF1, saving, BUTTON_DELAY);
+					read_button_neg_switch_pcf2(PCF1, BUTTON_ERASE_PROGRAM_PCF1, erasing, BUTTON_DELAY);
+					read_button_neg_switch_pcf2(PCF1, BUTTON_EXIT_PROGRAM_PCF1, exit_program, BUTTON_DELAY);
+					step_mode_switch_pcf(PCF1, BUTTON_STEP_MODE_PCF1);
 					manual_mode();
 					if (saving == true)
 					{
