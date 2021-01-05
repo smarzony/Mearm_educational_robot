@@ -259,18 +259,17 @@ void rotoryEncoder_get_value(uint8_t PIN_CLK, uint8_t PIN_DT, bool & PIN_CLK_Las
 
 void buttons_init()
 {
-	pcf8574[0].begin();
-	pcf8574[1].begin();
-
 	for (int x = 0; x <= 1; x++)
 	{
-		//pcf8574[x].begin();
+		pcf8574[x].begin();
 		for (int y = 0; y <= 7; y++)
 		{
-			pcf8574[x].pinMode(y, INPUT_PULLUP);
+			// pcf8574[x].pinMode(y, INPUT_PULLUP);
+			pcf8574[x].pinMode(y, INPUT);
+			pcf8574[x].digitalWrite(y, HIGH);
 		}		
 	}
-
+	Serial.println("PCF modules initialised");
 
 	//pcf8574.pinMode(ROTORY_ENCODER_CLK, INPUT);
 	//pcf8574.pinMode(ROTORY_ENCODER_DT, INPUT);

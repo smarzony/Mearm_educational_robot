@@ -45,18 +45,21 @@ void get_coords(servo_positions &positions, uint16_t address)
 	EEPROM.get(eeAddress, positions);
 }
 
-void print_info(servo_positions positions)
+String print_info(servo_positions positions)
 {
-	Serial.print("Pos: ");
-	Serial.print(positions.SERVO_ROTATE_POS);
-	Serial.print(" ");
-	Serial.print(positions.SERVO_VERTICAL_POS);
-	Serial.print(" ");
-	Serial.print(positions.SERVO_EXTEND_POS);
-	Serial.print(" ");
-	Serial.print(positions.SERVO_GRIPPER_POS);
-	Serial.print(" Speed: ");
-	Serial.println(positions.SERVO_MOVE_SPEED);
+	String output;
+	output = "Pos: ";
+	output += positions.SERVO_ROTATE_POS;
+	output += " ";
+	output += positions.SERVO_VERTICAL_POS;
+	output += " ";
+	output += positions.SERVO_EXTEND_POS;
+	output += " ";
+	output += positions.SERVO_GRIPPER_POS;
+	output += " Speed: ";
+	output += positions.SERVO_MOVE_SPEED;
+
+	return output;
 }
 
 void set_position(servo_positions positions)
@@ -89,7 +92,7 @@ void memory_read()
 				Serial.print("Address ");
 				Serial.print(addr);
 				Serial.print(" used. ");
-				print_info(temp_pos);
+				Serial.println(print_info(temp_pos));
 				address_for_save++;
 			}
 		}
@@ -101,3 +104,18 @@ void memory_read()
 		}
 	}
 }
+
+//void file_append(String filename, String data)
+//{
+//	File dataFile = SD.open(filename, O_APPEND);
+//	if (dataFile) 
+//	{
+//		dataFile.println(data);
+//		dataFile.close();
+//	}
+//	else 
+//	{
+//		Serial.print("error opening ");
+//		Serial.println(filename);
+//	}
+//}

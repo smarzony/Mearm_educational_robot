@@ -8,7 +8,6 @@ void manual_mode()
 		Serial.print("Move speed: ");
 		Serial.println(positions.SERVO_MOVE_SPEED);
 	}
-	//servo_pos_changed[0] = twoButtonControl_pcf(positions.SERVO_ROTATE_POS, 0, 1, positions.SERVO_MOVE_SPEED);
 	
 	servo_pos_changed[0] = twoButtonControl_pcf(positions.SERVO_ROTATE_POS, BUTTON_ROTATE_MINUS_PCF0, BUTTON_ROTATE_PLUS_PCF0, positions.SERVO_MOVE_SPEED, PCF0);
 	if (positions.SERVO_ROTATE_POS < limits.SERVO_ROTATE_MIN)
@@ -64,7 +63,7 @@ void manual_mode()
 
 	if (servo_pos_changed[0] || servo_pos_changed[1] || servo_pos_changed[2] || servo_pos_changed[3])
 	{
-		print_info(positions);
+		Serial.println(print_info(positions));
 	}
 }
 

@@ -1,28 +1,16 @@
-/***************************************************
-  This is an example for our Adafruit 16-channel PWM & Servo driver
-  Servo test - this will drive 8 servos, one after the other on the
-  first 8 pins of the PCA9685
+#include <jm_PCF8574.h>
 
-  Pick one up today in the adafruit shop!
-  ------> http://www.adafruit.com/products/815
 
-  These drivers use I2C to communicate, 2 pins are required to
-  interface.
 
-  Adafruit invests time and resources providing this open source code,
-  please support Adafruit and open-source hardware by purchasing
-  products from Adafruit!
-
-  Written by Limor Fried/Ladyada for Adafruit Industries.
-  BSD license, all text above must be included in any redistribution
- ****************************************************/
-
+#include "Arduino.h"
 #include <Wire.h>
-#include <PCF8574.h>
+// #include <PCF8574.h>
 #include <Adafruit_PWMServoDriver.h>
 #include <EEPROM.h>
+#include <SPI.h>
+#include <SdFat.h>
 
-//#define SERVOS_WORKING
+#define SERVOS_WORKING
 
 #ifdef SERVOS_WORKING
 
@@ -33,6 +21,8 @@
 	#define SERVO_FREQ 50
 
 #endif // SERVOS_WORKING
+
+#define CHIP_SELECT 4
 
 #define ROTORY_ENCODER_PUSHBUTTON P2
 #define ROTORY_ENCODER_CLK P0
@@ -105,13 +95,11 @@ struct rotoryEncoder {
 	int value;
 };
 
-PCF8574 pcf8574[2] = { 0x20, 0x21 };
+jm_PCF8574 pcf8574[2] = {0x20 , 0x21};
 
 #ifdef SERVOS_WORKING
 	Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 #endif
-
-
 
 rotoryEncoder rotory_encoder;
 servo_limits limits;
@@ -129,89 +117,52 @@ bool step_back = false;
 bool read_memory = false;
 bool exit_program = false;
 
-void setup() {
+uint8_t watchdog_counter = 0;
+
+void setup() 
+{
 	Serial.begin(9600);
 	Serial.println("MeArm Robot 2020");
+	Serial.println("Initializing SD card...");	
+//	pinMode(CHIP_SELECT, OUTPUT);
+//	while (!SD.begin(CHIP_SELECT)) 
+//	{
+//		Serial.println("Card failed, or not present");
+//		delay(500);
+//	}
+//	Serial.println("card initialized.");
 
+	Wire.begin();
 	#ifdef SERVOS_WORKING
 		pwm.begin();
 		pwm.setOscillatorFrequency(27000000);
 		pwm.setPWMFreq(SERVO_FREQ);
+		Serial.println("Servo driver initialised");
 	#endif
 	
 
-	
 	buttons_init();
 	memory_read();
 
 	get_coords(positions, 0);
 
-	#ifdef SERVOS_WORKING
-		pwm.setPWM(SERVO_ROTATE, 0, positions.SERVO_ROTATE_POS);
-		pwm.setPWM(SERVO_VERTICAL, 0, positions.SERVO_VERTICAL_POS);
-		pwm.setPWM(SERVO_EXTEND, 0, positions.SERVO_EXTEND_POS);
-		pwm.setPWM(SERVO_GRIPPER, 0, positions.SERVO_GRIPPER_POS);
-	#endif
-
 	delay(10);
 	Serial.print("Starting position: ");
-	print_info(positions);
+	Serial.println(print_info(positions));
 }
 
 
-void loop() {
+void loop() 
+{	
 	now = millis();
+	mainloop();
+	// test_pcf();
+	test_servos(); // need to fully test this
 
 	if (now - last_save_time > 1000)
 	{
 		last_save_time = now;
-		save_coords(positions, 0);
+		Serial.println(watchdog_counter);
+		watchdog_counter++;
 	}
-
-	read_buttons();
-	step_mode_switch_pcf(PCF1, BUTTON_STEP_MODE_PCF1);
-	if (read_memory)
-	{
-		memory_read();
-		read_memory = false;
-	}
-
-	if (saving)
-	{
-		save_step(address_for_save, true);
-		saving = false;
-	}
-
-	if (program_run)
-	{
-		auto_mode();
-	}
-
-	if (erasing)
-	{
-		erase_program(0);
-		address_for_save = 1;
-		Serial.println("Program erased");
-		erasing = false;
-	}
-
-	if (program_run == false)
-	{
-		manual_mode();
-	}
-	/*
-	if (pcf8574[PCF1].digitalRead(0) == LOW)
-	{
-		delay(300);
-		if (pcf8574[PCF1].digitalRead(0) == LOW)
-			positions.SERVO_MOVE_SPEED++;
-			if (positions.SERVO_MOVE_SPEED > 3)
-				positions.SERVO_MOVE_SPEED = 0;
-			Serial.print("Servo move speed: ");
-			Serial.println(positions.SERVO_MOVE_SPEED);		
-	}
-	
-	read_button_inc_switch_pcf2(PCF1, BUTTON_SPEED_SELECT_PCF1, 0, 3, positions.SERVO_MOVE_SPEED, 50);
-	*/
 }
-

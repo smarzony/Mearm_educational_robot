@@ -275,3 +275,5 @@ __pycache__/
 /Mearm_educational_robot/Mearm_educational_robot.vcxproj
 /Mearm_educational_robot/Mearm_educational_robot.vcxproj.filters
 /Mearm_educational_robot.sln
+/ArduinoOutput/
+*json

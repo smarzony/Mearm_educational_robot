@@ -1,6 +1,10 @@
 void auto_mode()
 {
-	Serial.println("Program start");
+	String output_text;
+	output_text = "Program start";
+	Serial.println(output_text);
+
+//	file_append("dupa.txt", "witam");
 	servo_positions program_step;
 	uint16_t program_step_no = 0;
 	exit_program = false;
@@ -34,10 +38,18 @@ void auto_mode()
 		}
 		else
 		{
+			output_text = "Step ";
+			output_text += program_step_no;
+			output_text += ". ";
+			output_text += print_info(program_step);
+			Serial.println(output_text);
+
+			/*
 			Serial.print("Step ");
 			Serial.print(program_step_no);
 			Serial.print(". ");
-			print_info(program_step);
+			Serial.println(print_info(program_step));
+			*/
 			set_position(program_step);
 			program_step_no++;
 			if (step_mode == false)
@@ -125,7 +137,7 @@ void auto_mode()
 		Serial.println("Program exited");
 	Serial.println("Program end");
 	get_coords(positions, program_step_no);
-	print_info(positions);
+	Serial.println(print_info(positions));
 	program_run = false;
 	step_mode = false;
 }
