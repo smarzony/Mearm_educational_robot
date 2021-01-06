@@ -157,7 +157,7 @@ void loop()
 	now = millis();
 	mainloop();
 	// test_pcf();
-	test_servos(); // need to fully test this
+	// test_servos(); // need to fully test this
 
 	if (now - last_save_time > 1000)
 	{

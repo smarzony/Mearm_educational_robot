@@ -20,16 +20,18 @@ void test_pcf()
 
 void test_servos()
 {
-    for (int pos = 150; pos < 250; pos++)
+    for (int pos = 204; pos < 408; pos++)
     {
         pwm.setPWM(SERVO_ROTATE, 0, pos);
-        delay(50);
+        Serial.println(pos);
+        delay(40);
     }
     Serial.println("Half sweep");
-    for (int pos = 250; pos > 150; pos--)
+    for (int pos = 408; pos > 204; pos--)
     {
         pwm.setPWM(SERVO_ROTATE, 0, pos);
-        delay(50);
+        Serial.println(pos);
+        delay(40);
     }
     Serial.println("Full sweep");
 }
